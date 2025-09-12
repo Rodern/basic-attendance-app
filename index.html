@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basic Attendance App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <h1>Basic Attendance App</h1>
+    <div id="auth-tabs">
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-login" onclick="showLoginTab()">Login</button>
+        <button class="tab-btn" id="tab-signup" onclick="showSignupTab()">Sign Up</button>
+      </div>
+  <div id="loginTab" class="tab-content">
+        <h2>Login</h2>
+        <input type="email" id="loginEmail" placeholder="School Email">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button onclick="login()">Login</button>
+      </div>
+  <div id="signupTab" class="tab-content">
+        <h2>Sign Up</h2>
+        <input type="email" id="signupEmail" placeholder="School Email">
+        <input type="password" id="signupPassword" placeholder="Password">
+        <button onclick="register()">Sign Up</button>
+      </div>
+    </div>
+  <div id="main">
+      <div class="tabs">
+        <button class="tab-btn" id="tab-register" onclick="showRegisterPage()">Register Students</button>
+        <button class="tab-btn" id="tab-attendance" onclick="showAttendancePage()">Mark Attendance</button>
+      </div>
+      <div id="registerPage" class="tab-content">
+        <h2>Register Student</h2>
+        <div style="margin-bottom:18px;">
+          <label for="teacherClass" style="font-weight:600;">Class Name:</label>
+          <input type="text" id="teacherClass" placeholder="Set your class" style="margin-top:6px;">
+          <button onclick="setTeacherClass()" style="margin-top:8px;">Save Class</button>
+          <span id="classDisplay" style="margin-left:12px;font-weight:500;color:#007bff;"></span>
+        </div>
+        <input type="text" id="studentName" placeholder="Student Name">
+        <input type="text" id="studentRoll" placeholder="Roll Number">
+        <button onclick="addStudent()">Add Student</button>
+      </div>
+      <div id="attendancePage" class="tab-content">
+        <h2>Mark Attendance</h2>
+        <input title="Select Date" type="date" id="attendanceDate">
+        <div id="studentsList"></div>
+        <button onclick="markAttendance()">Mark Attendance</button>
+        <button id="printAttendanceBtn" class="floating-btn" onclick="printAttendanceSheet()" title="Print Attendance">🖨️</button>
+        <div id="sheetViewer" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeSheetViewer()">&times;</span>
+                
+                <div id="attendanceSheet"></div>
+                <button onclick="printSheet()">Print</button>
+            </div>
+        </div>
+    </div>
+    </div>
+  <script src="app.js"></script>
+</body>
+</html>

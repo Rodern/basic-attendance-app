@@ -12,6 +12,10 @@ const app = express();
 app.use(cors({ origin: '*', credentials: false }));
 app.use(bodyParser.json());
 
+// Serve static files (HTML, CSS, JS) from the src directory
+const path = require('path');
+app.use(express.static(path.join(__dirname)));
+
 mongoose.connect('mongodb+srv://alainkimbu_db_user:3cX5wzElKqGghgxB@cluster0.y3eseqm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true

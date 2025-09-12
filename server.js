@@ -16,7 +16,9 @@ app.use(bodyParser.json());
 const path = require('path');
 app.use(express.static(path.join(__dirname)));
 
-mongoose.connect('mongodb+srv://alainkimbu_db_user:3cX5wzElKqGghgxB@cluster0.y3eseqm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
+const MONGODB_URI = `mongodb+srv://alainkimbu_db_user:${MONGODB_PASSWORD}@cluster0.y3eseqm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -170,6 +172,7 @@ app.get('/api/attendance/:date', authenticateToken, async (req, res) => {
   res.json(attendance);
 });
 
-app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });

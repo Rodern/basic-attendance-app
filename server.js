@@ -1,4 +1,3 @@
-
 // Basic Express server for attendance app
 
 const express = require('express');
@@ -17,6 +16,7 @@ const path = require('path');
 app.use(express.static(path.join(__dirname)));
 
 const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
+
 const MONGODB_URI = `mongodb+srv://alainkimbu_db_user:${MONGODB_PASSWORD}@cluster0.y3eseqm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
@@ -27,10 +27,12 @@ const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 
 
 
+const ALLOWED_ROLES = ['admin', 'developer', 'teacher', 'hr'];
 const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: String,
-  className: { type: String, default: '' }
+  className: { type: String, default: '' },
+  role: { type: String, enum: ALLOWED_ROLES, default: 'teacher' }
 });
 // Update teacher class name
 app.post('/api/teacher/class', authenticateToken, async (req, res) => {
@@ -68,11 +70,12 @@ const StudentSchema = new mongoose.Schema({
 StudentSchema.index({ roll: 1, teacherId: 1 }, { unique: true });
 
 
+const ATTENDANCE_STATUSES = ['present', 'sick', 'notified_absence', 'absent'];
 const AttendanceSchema = new mongoose.Schema({
   studentId: mongoose.Schema.Types.ObjectId,
   teacherId: mongoose.Schema.Types.ObjectId, // Reference to User
   date: { type: String, required: true }, // Store only date string (e.g. '2025-09-12')
-  present: Boolean
+  status: { type: String, enum: ATTENDANCE_STATUSES, default: 'absent' }
 });
 AttendanceSchema.index({ studentId: 1, date: 1 }, { unique: true });
 
@@ -94,13 +97,18 @@ function authenticateToken(req, res, next) {
 // Auth routes
 
 app.post('/api/register', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
+  const userRole = ALLOWED_ROLES.includes(role) ? role : 'teacher';
   try {
-    const user = new User({ email, password });
+  const user = new User({ email, password, role: userRole });
     await user.save();
-    // Issue JWT after registration
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '60m' });
-    res.json({ success: true, token, userId: user._id });
+  // Issue JWT that expires at the coming midnight of teacher's local time
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0); // Next midnight
+  const expiresInSeconds = Math.floor((midnight.getTime() - now.getTime()) / 1000);
+  const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: expiresInSeconds });
+  res.json({ success: true, token, userId: user._id });
   } catch (err) {
     if (err.code === 11000) {
       res.status(400).json({ error: 'Email already exists.' });
@@ -115,8 +123,13 @@ app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email, password });
   if (user) {
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '5m' });
-    res.json({ success: true, token, userId: user._id, className: user.className || '' });
+  // Issue JWT that expires at the coming midnight of teacher's local time
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0); // Next midnight
+  const expiresInSeconds = Math.floor((midnight.getTime() - now.getTime()) / 1000);
+  const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: expiresInSeconds });
+  res.json({ success: true, token, userId: user._id, className: user.className || '', role: user.role });
   } else {
     res.status(401).json({ success: false });
   }
@@ -149,13 +162,16 @@ app.get('/api/students', authenticateToken, async (req, res) => {
 // Attendance routes
 
 app.post('/api/attendance', authenticateToken, async (req, res) => {
-  const { studentId, date, present } = req.body;
+  const { studentId, date, status } = req.body;
   const teacherId = req.user.userId;
+  if (!ATTENDANCE_STATUSES.includes(status)) {
+    return res.status(400).json({ error: 'Invalid attendance status.' });
+  }
   try {
     // Upsert attendance for student/date
     const attendance = await Attendance.findOneAndUpdate(
       { studentId, date },
-      { studentId, teacherId, date, present },
+      { studentId, teacherId, date, status },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
     res.json(attendance);
@@ -171,6 +187,51 @@ app.get('/api/attendance/:date', authenticateToken, async (req, res) => {
   const attendance = await Attendance.find({ teacherId, date });
   res.json(attendance);
 });
+
+// Get all teachers' attendance for a given date (non-teacher roles only)
+app.get('/api/all-attendance/:date', authenticateToken, async (req, res) => {
+  const { date } = req.params;
+  const userId = req.user.userId;
+  const user = await User.findById(userId);
+  if (!user || user.role === 'teacher') {
+    return res.status(403).json({ error: 'Access denied.' });
+  }
+  // Find all teachers
+  const teachers = await User.find({ role: 'teacher' });
+  // For each teacher, get their students and attendance for the date
+  const results = await Promise.all(teachers.map(async teacher => {
+    const students = await Student.find({ teacherId: teacher._id });
+    // Get attendance for these students on the given date
+    const attendanceRecords = await Attendance.find({ teacherId: teacher._id, date });
+
+    if(attendanceRecords.length === 0) {
+      return {
+        teacherEmail: teacher.email,
+        className: teacher.className,
+        date: date,
+        students: []
+      };
+    }
+
+    // Map attendance by studentId
+    const attendanceMap = {};
+    attendanceRecords.forEach(a => { attendanceMap[a.studentId] = a.status; });
+    // Build student attendance list
+    const studentList = students.map(s => ({
+      name: s.name,
+      roll: s.roll,
+      status: attendanceMap[s._id] || 'absent'
+    }));
+    return {
+      teacherEmail: teacher.email,
+      className: teacher.className,
+      date: date,
+      students: studentList
+    };
+  }));
+  res.json(results);
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -1,6 +1,4 @@
 // Vanilla JS for attendance app
-
-
 let students = [];
 let attendance = {};
 let teacherId = null;

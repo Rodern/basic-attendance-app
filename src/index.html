@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basic Attendance App</title>
+  <link rel="icon" type="image/svg+xml" href="logo-alt.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <div style="display:flex;align-items:center;gap:16px;justify-content:center;margin-bottom:8px;position:relative;">
+      <img src="logo-alt.svg" alt="App Logo" style="height:56px;width:56px;border-radius:12px;box-shadow:0 2px 8px #0001;">
+      <h1 style="margin:0;">Basic Attendance App</h1>
+      <button id="logoutBtn" onclick="logout()" style="position:static;right:0;width: 6rem;padding:8px 18px;border-radius:8px;color:#fff;border:none;font-weight:600;display:none;cursor:pointer;">Logout</button>
+    </div>
+    <div id="auth-tabs">
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-login" onclick="showLoginTab()">Login</button>
+        <button class="tab-btn" id="tab-signup" onclick="showSignupTab()">Sign Up</button>
+      </div>
+  <div id="loginTab" class="tab-content">
+        <h2>Login</h2>
+        <input type="email" id="loginEmail" placeholder="School Email">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button onclick="login()">Login</button>
+      </div>
+  <div id="signupTab" class="tab-content">
+        <h2>Sign Up</h2>
+  <input type="email" id="signupEmail" placeholder="School Email (must end with @enkoeducation.com)">
+        <input type="password" id="signupPassword" placeholder="Password">
+  <button onclick="register()">Sign Up</button>
+      </div>
+    </div>
+  <div id="main">
+      <div class="tabs">
+        <button class="tab-btn" id="tab-register" onclick="showRegisterPage()">Register Students</button>
+        <button class="tab-btn" id="tab-attendance" onclick="showAttendancePage()">Mark Attendance</button>
+        <button class="tab-btn" id="tab-all-attendance" style="display:none;" onclick="showAllAttendancePage()">All Attendance Sheets</button>
+      </div>
+      <div id="registerPage" class="tab-content">
+        <h2>Register Student</h2>
+        <div class="class-name-input-container" style="margin-bottom:18px;">
+          <label for="teacherClass" style="font-weight:600;">Class Name:</label>
+          <div class="class-name-input-container" style="display: flex; align-items: center; gap: 10px;">
+            <input type="text" id="teacherClass" placeholder="Set your class" style="margin-top:6px;">
+            <button onclick="setTeacherClass()" style="margin-top:8px;">Save Class</button>
+          </div>
+          <span id="classDisplay" style="margin-left:12px;font-weight:500;color:white;"></span>
+        </div>
+        <input type="text" id="studentName" maxlength="50" placeholder="Student Name">
+        <input type="tel" id="studentRoll" maxlength="2" max="99" placeholder="Roll Number">
+        <button onclick="addStudent()">Add Student</button>
+      </div>
+    <div id="attendancePage" class="tab-content">
+    <h2>Mark Attendance</h2>
+    <input title="Select Date" type="date" id="attendanceDate">
+    <div id="studentsList"></div>
+    <button onclick="markAttendance()">Mark Attendance</button>
+    <button id="printAttendanceBtn" class="floating-btn" onclick="printAttendanceSheet()" title="Print Attendance">🖨️</button>
+    <div id="sheetViewer" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeSheetViewer()">&times;</span>
+        <div id="attendanceSheet"></div>
+        <button onclick="printSheet()">Print</button>
+      </div>
+    </div>
+    </div>
+    <div id="allAttendancePage" class="tab-content" style="display:none;">
+    <h2>All Teachers Attendance Sheet</h2>
+    <input title="Select Date" type="date" id="allAttendanceDate">
+    <button onclick="fetchAllAttendanceSheets()">Get Sheets</button>
+    <!-- <div id="allAttendanceSheets"></div> -->
+    <button id="printAllAttendanceBtn" class="floating-btn" style="display:none;" onclick="printAllAttendanceSheets()" title="Print All Attendance">🖨️</button>
+    <div id="allSheetsViewer" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeAllSheetsViewer()">&times;</span>
+        <div id="allAttendanceSheets"></div>
+        <button onclick="printAllAttendanceSheets()">Print</button>
+      </div>
+    </div>
+    </div>
+    </div>
+  <script src="app.js"></script>
+</body>
+</html>

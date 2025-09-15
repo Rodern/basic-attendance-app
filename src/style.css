@@ -1,0 +1,347 @@
+body {
+	font-family: 'Montserrat', Arial, sans-serif;
+	background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
+	min-height: 100vh;
+	margin: 0;
+    background-image: url(https://i.pinimg.com/736x/14/22/31/1422316ba149f1a986182b9e4b3864e3.jpg);
+}
+
+#app {
+	max-width: 700px;
+	margin: 60px auto;
+	background: rgba(255,255,255,0.15);
+	padding: 32px 32px 24px 32px;
+	border-radius: 32px;
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(12px);
+	border: 1px solid rgba(255,255,255,0.18);
+	position: relative;
+}
+
+h1 {
+	text-align: left;
+	font-size: 2.5rem;
+	font-weight: 700;
+	letter-spacing: 2px;
+	color: #222;
+	margin-bottom: 24px;
+}
+
+.tabs {
+    display: flex;
+    margin-bottom: 24px;
+    gap: 12px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 14px 0;
+    background: rgba(255, 255, 255, 0.25);
+    border: none;
+    border-radius: 16px 16px 0 0;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #222;
+    transition: background 0.2s, color 0.2s;
+    box-shadow: 0 2px 8px rgba(31, 38, 135, 0.07);
+}
+
+.tab-btn:hover {
+    background: #222;
+    color: #fff;
+}
+
+.tab-btn.active {
+    background: #222;
+    color: #fff;
+}
+
+.tab-content {
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 2px 16px rgba(31, 38, 135, 0.09);
+    padding: 32px 24px 24px 24px;
+    margin-bottom: 16px;
+}
+
+.floating-btn {
+    position: fixed;
+    top: 232px;
+    right: 56px;
+    background: linear-gradient(135deg, #00c6ff 0%, #007bff 100%);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 64px;
+    height: 64px;
+    font-size: 2.2rem;
+    box-shadow: 0 6px 24px rgba(31, 38, 135, 0.18);
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.floating-btn:hover {
+    background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.22);
+}
+
+#sheetViewer,
+#allSheetsViewer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+#sheetViewer .modal-content,
+#allSheetsViewer .modal-content {
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(31, 38, 135, 0.2);
+    width: 90%;
+    max-width: 800px;
+    max-height: 80%;
+    overflow-y: auto;
+    position: relative;
+}
+
+#sheetViewer .modal-content .close,
+#allSheetsViewer .modal-content .close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+}
+
+.attendanceSheetTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+}
+
+.attendanceSheetTable thead {
+    background: #509E2F;
+    color: #fff;
+    text-align: left;
+}
+
+.attendanceSheetTable th, .attendanceSheetTable td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.attendance-sheet-block {
+    position: relative;
+}
+
+.enko-logo {
+    height: 80px;
+    position: absolute;
+    right: 34px;
+    top: 60px;
+}
+
+.attendance-sheet-block > .enko-logo {
+    top: 23px;
+}
+
+@media print {
+    .attendance-sheet-block {
+        page-break-before: always;
+    }
+
+    .enko-logo {
+        top: 23px;
+    }
+}
+
+#registerPage.tab-content {
+	display: block;
+}
+
+input[type="text"], input[type="tel"], input[type="number"], input[type="email"], input[type="password"], input[type="date"] {
+	margin: 12px 0;
+	padding: 14px;
+	width: 100%;
+	box-sizing: border-box;
+	border-radius: 12px;
+	border: 1px solid #e0eafc;
+	background: rgba(255,255,255,0.6);
+	font-size: 1rem;
+	outline: none;
+	transition: border 0.2s;
+}
+input:focus {
+	border: 1.5px solid #007bff;
+}
+
+button {
+	margin: 12px 0;
+	padding: 14px;
+	width: 100%;
+	box-sizing: border-box;/* background: linear-gradient(135deg, #00c6ff 0%, #007bff 100%); */
+        /* background: linear-gradient(90deg, #222 0%, rgb(96, 94, 92) 100%); */
+        background: linear-gradient(90deg, #222222 0%, #74605d 100%);
+	color: #fff;
+	border: none;
+	border-radius: 12px;
+	cursor: pointer;
+	font-weight: 600;
+	font-size: 1.1rem;
+	box-shadow: 0 2px 8px rgba(31,38,135,0.09);
+	transition: background 0.2s;
+}
+button:hover {
+    background: linear-gradient(90deg, #222 0%, rgb(96, 94, 92) 100%);
+}
+
+.edit-btn {
+    all: initial;
+    height: 32px;
+    width: 32px;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    float: right;
+    margin-right: 8px;
+    border-radius: 12px;
+    display: flex;
+    /* margin-left: auto; */
+}
+
+.edit-btn:hover {
+    background: #463737;
+    color: #fff;
+}
+
+.save-btn, .cancel-btn {
+    all: initial;
+    height: 32px;
+    width: fit-content;
+    padding: 0 8px;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-family: inherit;
+    color: #333;
+    cursor: pointer;
+    float: right;
+    margin-right: 8px;
+    border-radius: 12px;
+    display: flex;
+    /* margin-left: auto; */
+}
+
+.save-btn:hover {
+    background: #28a745;
+    color: #fff;
+}
+
+.cancel-btn:hover {
+    background: #da251c;
+    color: #fff;
+}
+
+.delete-btn {
+    all: initial;
+    height: 32px;
+    width: 32px;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    float: right;
+    margin-right: 0%;
+    border-radius: 12px;
+    display: flex;
+    /* margin-left: auto; */
+}
+
+.delete-btn:hover {
+    background: #ff4d4d;
+    color: #fff;
+}
+
+#studentsList {
+	margin-top: 18px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+#studentsList div {
+	background: rgba(255,255,255,0.45);
+	border-radius: 10px;
+	padding: 10px 16px;
+	box-shadow: 0 1px 4px rgba(31,38,135,0.07);
+	display: flex;
+	align-items: center;
+	font-size: 1rem;
+}
+
+.status-present {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.status-absent {
+    color: #ff4d4d;
+    font-weight: 600;
+}
+
+.status-notified_absence {
+    color: #ffc107;
+    font-weight: 600;
+}
+
+.status-sick {
+    color: #17a2b8;
+    font-weight: 600;
+}
+
+input[type="checkbox"] {
+	margin-right: 12px;
+	accent-color: #007bff;
+	width: 18px;
+	height: 18px;
+}
+
+.attendance-status-select {
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1px solid #74605d;
+  background: rgba(255,255,255,0.7);
+  font-size: 1rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+  color: #222;
+  display: inline-flex;
+  margin-inline: auto 8px;
+  box-shadow: 0 2px 8px rgba(31, 38, 135, 0.07);
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.attendance-status-select:focus {
+  border: 2px solid #74605d;
+  box-shadow: 0 4px 16px rgba(31, 38, 135, 0.12);
+}

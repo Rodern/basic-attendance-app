@@ -11,10 +11,7 @@ let tokenExpiry = null;
 let baseUrl = '';
 
 
-
-
-
-function register() {
+/* function register() {
   const email = document.getElementById('signupEmail').value;
   const password = document.getElementById('signupPassword').value;
   fetch(`${baseUrl}/api/register`, {
@@ -36,10 +33,48 @@ function register() {
       window.location.reload();
     }
   });
+} */
+
+function register() {
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  if (!email || !password) {
+    alert('Please enter both email and password.');
+    return;
+  }
+  // School email validation: must end with @enkoeducation.com
+  const schoolEmailRegex = /^[^@\s]+@enkoeducation\.com$/i;
+  if (!schoolEmailRegex.test(email)) {
+    alert('Please use your school email ending with @enkoeducation.com.');
+    return;
+  }
+  // ...existing code...
+  fetch('/api/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  }).then(async res => {
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.error || 'Failed to register.');
+      return;
+      }
+    if (data.success) {
+      saveToken(data.token);
+      teacherId = data.userId;
+      document.getElementById('auth-tabs').style.display = 'none';
+      document.getElementById('main').style.display = 'block';
+      showMain();
+      window.location.reload();
+    }
+      /* if (data.success) {
+        alert('Registration successful! Please login.');
+        showLoginTab();
+      } else {
+        alert(data.message || 'Registration failed.');
+      } */
+    });
 }
-
-
-
 
 
 function login(isFromRegister = false) {

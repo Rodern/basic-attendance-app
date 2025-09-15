@@ -213,6 +213,56 @@ button:hover {
     background: linear-gradient(90deg, #222 0%, rgb(96, 94, 92) 100%);
 }
 
+.edit-btn {
+    all: initial;
+    height: 32px;
+    width: 32px;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    float: right;
+    margin-right: 8px;
+    border-radius: 12px;
+    display: flex;
+    /* margin-left: auto; */
+}
+
+.edit-btn:hover {
+    background: #463737;
+    color: #fff;
+}
+
+.save-btn, .cancel-btn {
+    all: initial;
+    height: 32px;
+    width: fit-content;
+    padding: 0 8px;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-family: inherit;
+    color: #333;
+    cursor: pointer;
+    float: right;
+    margin-right: 8px;
+    border-radius: 12px;
+    display: flex;
+    /* margin-left: auto; */
+}
+
+.save-btn:hover {
+    background: #28a745;
+    color: #fff;
+}
+
+.cancel-btn:hover {
+    background: #da251c;
+    color: #fff;
+}
+
 .delete-btn {
     all: initial;
     height: 32px;

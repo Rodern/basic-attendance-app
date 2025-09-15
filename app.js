@@ -134,10 +134,62 @@ function renderStudents(attendanceMap = {}) {
     const currentStatus = attendanceMap[student._id] || 'absent';
     const select = `<select id='status-${student._id}' class='attendance-status-select'>${statuses.map(s => `<option value='${s}'${s===currentStatus?' selected':''}>${s.replace('_', ' ')}</option>`).join('')}</select>`;
     const div = document.createElement('div');
-    div.innerHTML = `${student.name} (${student.roll}) ${select} <button class='delete-btn' onclick='deleteStudent("${student._id}")' title='Delete Student'>&times;</button>`;
+    div.innerHTML = `
+      <span id='student-name-${student._id}'>${student.name}</span> <span class='student-roll' id='student-roll-${student._id}'>(${student.roll})</span>
+      ${select}
+      <button class='edit-btn' onclick='editStudent("${student._id}")' title='Edit Student'>✏️</button>
+      <button class='delete-btn' onclick='deleteStudent("${student._id}")' title='Delete Student'>&times;</button>
+      <span id='edit-fields-${student._id}' style='display:none;'>
+        <input type='text' id='edit-name-${student._id}' value='${student.name}' style='margin-left:8px;min-width:180px; width: auto; max-width: 300px;'>
+        <input type='text' id='edit-roll-${student._id}' value='${student.roll}' style='width:80px;'>
+        <br/>
+        <button onclick='saveStudentEdit("${student._id}")' class='save-btn'>Save</button>
+        <button onclick='cancelStudentEdit("${student._id}")' class='cancel-btn'>Cancel</button>
+      </span>
+    `;
     list.appendChild(div);
   });
 }
+
+function editStudent(studentId) {
+  document.querySelectorAll('.attendance-status-select, .edit-btn, .delete-btn').forEach(sel => sel.style.display = 'none');
+  document.getElementById(`student-name-${studentId}`).style.display = 'none';
+  document.getElementById(`student-roll-${studentId}`).style.display = 'none';
+  document.getElementById(`edit-fields-${studentId}`).style.display = 'inline';
+}
+
+function cancelStudentEdit(studentId) {
+  document.querySelectorAll('.edit-btn, .delete-btn').forEach(sel => sel.style.display = 'flex');
+  document.querySelectorAll('.attendance-status-select').forEach(sel => sel.style.display = 'inline-flex');
+  document.getElementById(`student-name-${studentId}`).style.display = 'inline';
+  document.getElementById(`student-roll-${studentId}`).style.display = 'inline';
+  document.getElementById(`edit-fields-${studentId}`).style.display = 'none';
+}
+
+function saveStudentEdit(studentId) {
+  const name = document.getElementById(`edit-name-${studentId}`).value.trim();
+  const roll = document.getElementById(`edit-roll-${studentId}`).value.trim();
+  if (!name || !roll) {
+    alert('Please enter both name and roll number.');
+    return;
+  }
+  fetch(`${baseUrl}/api/students/${studentId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwtToken },
+    body: JSON.stringify({ name, roll })
+  }).then(async res => {
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.error || 'Failed to update student.');
+      return;
+    }
+    // Update local students list and re-render
+    students = students.map(s => s._id === studentId ? { ...s, name, roll } : s);
+    renderStudents();
+    alert('Student updated!');
+  });
+}
+
 function deleteStudent(studentId) {
   if (!confirm('Are you sure you want to delete this student?')) return;
   fetch(`${baseUrl}/api/students/${studentId}`, {

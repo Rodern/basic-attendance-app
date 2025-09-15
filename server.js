@@ -136,7 +136,6 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Student routes
-
 app.post('/api/students', authenticateToken, async (req, res) => {
   const { name, roll } = req.body;
   const teacherId = req.user.userId;
@@ -158,6 +157,31 @@ app.get('/api/students', authenticateToken, async (req, res) => {
   const students = await Student.find({ teacherId });
   res.json(students);
 });
+
+// Update student details
+app.put('/api/students/:id', authenticateToken, async (req, res) => {
+  const teacherId = req.user.userId;
+  const studentId = req.params.id;
+  const { name, roll } = req.body;
+  try {
+    const student = await Student.findOneAndUpdate(
+      { _id: studentId, teacherId },
+      { name, roll },
+      { new: true, runValidators: true }
+    );
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found or not authorized.' });
+    }
+    res.json({ success: true, student });
+  } catch (err) {
+    if (err.code === 11000) {
+      res.status(400).json({ error: 'Roll number must be unique for this teacher.' });
+    } else {
+      res.status(500).json({ error: 'Failed to update student.' });
+    }
+  }
+});
+
 
 // Attendance routes
 

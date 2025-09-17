@@ -1,9 +1,17 @@
+/* Spinner animation for network buttons */
+.spinner svg {
+    vertical-align: middle;
+}
+.network-btn[disabled] {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
 body {
 	font-family: 'Montserrat', Arial, sans-serif;
 	background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
 	min-height: 100vh;
 	margin: 0;
-    background-image: url(https://i.pinimg.com/736x/14/22/31/1422316ba149f1a986182b9e4b3864e3.jpg);
+    /* background-image: url(https://i.pinimg.com/736x/14/22/31/1422316ba149f1a986182b9e4b3864e3.jpg); */
 }
 
 #app {
@@ -318,6 +326,16 @@ button:hover {
 
 .status-sick {
     color: #17a2b8;
+    font-weight: 600;
+}
+
+.status-late {
+    color: #fd7e14;
+    font-weight: 600;
+}
+
+.status-transferred {
+    color: rgb(58, 58, 255);
     font-weight: 600;
 }
 

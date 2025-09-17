@@ -2,9 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Basic Attendance App</title>
+  <title>Basic Attendance</title>
+  <meta name="description" content="A modern web app for daily student attendance, teacher management, and printable sheets. Secure, fast, and easy to use.">
+  <meta name="keywords" content="attendance, school, teacher, student, enko, education, register, class, web app, printable, daily attendance">
+  <meta name="author" content="Enko Education">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://basic-attendance-app.vercel.app/">
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://basic-attendance-app.vercel.app/">
+  <meta property="og:title" content="Basic Attendance App">
+  <meta property="og:description" content="A modern web app for daily student attendance, teacher management, and printable sheets. Secure, fast, and easy to use.">
+  <meta property="og:image" content="https://basic-attendance-app.vercel.app/logo-alt.svg">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://basic-attendance-app.vercel.app/">
+  <meta name="twitter:title" content="Basic Attendance App">
+  <meta name="twitter:description" content="A modern web app for daily student attendance, teacher management, and printable sheets. Secure, fast, and easy to use.">
+  <meta name="twitter:image" content="https://basic-attendance-app.vercel.app/logo-alt.svg">
+  <!-- Favicons -->
   <link rel="icon" type="image/svg+xml" href="logo-alt.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="logo-alt.svg">
+  <link rel="apple-touch-icon" href="logo-alt.svg">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,13 +44,33 @@
         <h2>Login</h2>
         <input type="email" id="loginEmail" placeholder="School Email">
         <input type="password" id="loginPassword" placeholder="Password">
-        <button onclick="login()">Login</button>
+      <button id="submitBtn" class="network-btn" onclick="login()">
+        <span class="btn-text">Login</span>
+        <span class="spinner" style="display:none;margin-left:8px;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="8" cy="8" r="7" stroke="#007bff" stroke-width="2" opacity="0.2"/>
+            <path d="M8 1a7 7 0 1 1-7 7" stroke="#007bff" stroke-width="2" stroke-linecap="round">
+              <animateTransform attributeName="transform" type="rotate" from="0 8 8" to="360 8 8" dur="0.8s" repeatCount="indefinite"/>
+            </path>
+          </svg>
+        </span>
+      </button>
       </div>
   <div id="signupTab" class="tab-content">
         <h2>Sign Up</h2>
   <input type="email" id="signupEmail" placeholder="School Email (must end with @enkoeducation.com)">
         <input type="password" id="signupPassword" placeholder="Password">
-  <button onclick="register()">Sign Up</button>
+  <button id="signupBtn" class="network-btn" onclick="register()">
+    <span class="btn-text">Sign Up</span>
+    <span class="spinner" style="display:none;margin-left:8px;">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="8" cy="8" r="7" stroke="#007bff" stroke-width="2" opacity="0.2"/>
+        <path d="M8 1a7 7 0 1 1-7 7" stroke="#007bff" stroke-width="2" stroke-linecap="round">
+          <animateTransform attributeName="transform" type="rotate" from="0 8 8" to="360 8 8" dur="0.8s" repeatCount="indefinite"/>
+        </path>
+      </svg>
+    </span>
+  </button>
       </div>
     </div>
   <div id="main">
@@ -44,32 +85,82 @@
           <label for="teacherClass" style="font-weight:600;">Class Name:</label>
           <div class="class-name-input-container" style="display: flex; align-items: center; gap: 10px;">
             <input type="text" id="teacherClass" placeholder="Set your class" style="margin-top:6px;">
-            <button onclick="setTeacherClass()" style="margin-top:8px;">Save Class</button>
+            <button id="saveClassBtn" class="network-btn" onclick="setTeacherClass()" style="margin-top:8px;">
+              <span class="btn-text">Save Class</span>
+              <span class="spinner" style="display:none;margin-left:8px;">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="8" cy="8" r="7" stroke="#007bff" stroke-width="2" opacity="0.2"/>
+                  <path d="M8 1a7 7 0 1 1-7 7" stroke="#007bff" stroke-width="2" stroke-linecap="round">
+                    <animateTransform attributeName="transform" type="rotate" from="0 8 8" to="360 8 8" dur="0.8s" repeatCount="indefinite"/>
+                  </path>
+                </svg>
+              </span>
+            </button>
           </div>
           <span id="classDisplay" style="margin-left:12px;font-weight:500;color:white;"></span>
         </div>
         <input type="text" id="studentName" maxlength="50" placeholder="Student Name">
         <input type="tel" id="studentRoll" maxlength="2" max="99" placeholder="Roll Number">
-        <button onclick="addStudent()">Add Student</button>
+        <button id="addStudentBtn" class="network-btn" onclick="addStudent()">
+          <span class="btn-text">Add Student</span>
+          <span class="spinner" style="display:none;margin-left:8px;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="8" r="7" stroke="#007bff" stroke-width="2" opacity="0.2"/>
+              <path d="M8 1a7 7 0 1 1-7 7" stroke="#007bff" stroke-width="2" stroke-linecap="round">
+                <animateTransform attributeName="transform" type="rotate" from="0 8 8" to="360 8 8" dur="0.8s" repeatCount="indefinite"/>
+              </path>
+            </svg>
+          </span>
+        </button>
       </div>
     <div id="attendancePage" class="tab-content">
     <h2>Mark Attendance</h2>
     <input title="Select Date" type="date" id="attendanceDate">
     <div id="studentsList"></div>
-    <button onclick="markAttendance()">Mark Attendance</button>
+    <button id="markAttendanceBtn" class="network-btn" onclick="markAttendance()">
+      <span class="btn-text">Mark Attendance</span>
+      <span class="spinner" style="display:none;margin-left:8px;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="7" stroke="#007bff" stroke-width="2" opacity="0.2"/>
+          <path d="M8 1a7 7 0 1 1-7 7" stroke="#007bff" stroke-width="2" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" from="0 8 8" to="360 8 8" dur="0.8s" repeatCount="indefinite"/>
+          </path>
+        </svg>
+      </span>
+    </button>
     <button id="printAttendanceBtn" class="floating-btn" onclick="printAttendanceSheet()" title="Print Attendance">🖨️</button>
     <div id="sheetViewer" class="modal">
       <div class="modal-content">
         <span class="close" onclick="closeSheetViewer()">&times;</span>
         <div id="attendanceSheet"></div>
-        <button onclick="printSheet()">Print</button>
+        <button id="printSheetBtn" class="network-btn" onclick="printSheet()">
+          <span class="btn-text">Print</span>
+          <span class="spinner" style="display:none;margin-left:8px;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="8" r="7" stroke="#007bff" stroke-width="2" opacity="0.2"/>
+              <path d="M8 1a7 7 0 1 1-7 7" stroke="#007bff" stroke-width="2" stroke-linecap="round">
+                <animateTransform attributeName="transform" type="rotate" from="0 8 8" to="360 8 8" dur="0.8s" repeatCount="indefinite"/>
+              </path>
+            </svg>
+          </span>
+        </button>
       </div>
     </div>
     </div>
     <div id="allAttendancePage" class="tab-content" style="display:none;">
     <h2>All Teachers Attendance Sheet</h2>
     <input title="Select Date" type="date" id="allAttendanceDate">
-    <button onclick="fetchAllAttendanceSheets()">Get Sheets</button>
+    <button id="getSheetsBtn" class="network-btn" onclick="fetchAllAttendanceSheets()">
+      <span class="btn-text">Get Sheets</span>
+      <span class="spinner" style="display:none;margin-left:8px;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="7" stroke="#007bff" stroke-width="2" opacity="0.2"/>
+          <path d="M8 1a7 7 0 1 1-7 7" stroke="#007bff" stroke-width="2" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" from="0 8 8" to="360 8 8" dur="0.8s" repeatCount="indefinite"/>
+          </path>
+        </svg>
+      </span>
+    </button>
     <!-- <div id="allAttendanceSheets"></div> -->
     <button id="printAllAttendanceBtn" class="floating-btn" style="display:none;" onclick="printAllAttendanceSheets()" title="Print All Attendance">🖨️</button>
     <div id="allSheetsViewer" class="modal">

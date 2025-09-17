@@ -70,7 +70,7 @@ const StudentSchema = new mongoose.Schema({
 StudentSchema.index({ roll: 1, teacherId: 1 }, { unique: true });
 
 
-const ATTENDANCE_STATUSES = ['present', 'sick', 'notified_absence', 'absent'];
+const ATTENDANCE_STATUSES = ['present', 'sick', 'notified_absence', 'absent', 'late', 'transferred'];
 const AttendanceSchema = new mongoose.Schema({
   studentId: mongoose.Schema.Types.ObjectId,
   teacherId: mongoose.Schema.Types.ObjectId, // Reference to User

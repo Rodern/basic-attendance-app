@@ -1,4 +1,13 @@
 // Vanilla JS for attendance app
+// Utility to handle network button state and spinner
+function setNetworkButtonLoading(btn, isLoading) {
+  if (!btn) return;
+  btn.disabled = isLoading;
+  const spinner = btn.querySelector('.spinner');
+  const text = btn.querySelector('.btn-text');
+  if (spinner) spinner.style.display = isLoading ? 'inline-block' : 'none';
+  if (text) text.style.opacity = isLoading ? '0.7' : '1';
+}
 
 
 let students = [];
@@ -38,6 +47,7 @@ let baseUrl = '';
 function register() {
   const email = document.getElementById('signupEmail').value.trim();
   const password = document.getElementById('signupPassword').value;
+  const btn = document.getElementById('signupBtn');
   if (!email || !password) {
     alert('Please enter both email and password.');
     return;
@@ -48,31 +58,31 @@ function register() {
     alert('Please use your school email ending with @enkoeducation.com.');
     return;
   }
-  // ...existing code...
+  setNetworkButtonLoading(btn, true);
   fetch('/api/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
-  }).then(async res => {
-    const data = await res.json();
-    if (!res.ok) {
-      alert(data.error || 'Failed to register.');
-      return;
+  })
+    .then(async res => {
+      setNetworkButtonLoading(btn, false);
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'Failed to register.');
+        return;
       }
-    if (data.success) {
-      saveToken(data.token);
-      teacherId = data.userId;
-      document.getElementById('auth-tabs').style.display = 'none';
-      document.getElementById('main').style.display = 'block';
-      showMain();
-      window.location.reload();
-    }
-      /* if (data.success) {
-        alert('Registration successful! Please login.');
-        showLoginTab();
-      } else {
-        alert(data.message || 'Registration failed.');
-      } */
+      if (data.success) {
+        saveToken(data.token);
+        teacherId = data.userId;
+        document.getElementById('auth-tabs').style.display = 'none';
+        document.getElementById('main').style.display = 'block';
+        showMain();
+        window.location.reload();
+      }
+    })
+    .catch(err => {
+      setNetworkButtonLoading(btn, false);
+      alert('Network error. Please try again.');
     });
 }
 
@@ -80,26 +90,35 @@ function register() {
 function login(isFromRegister = false) {
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
+  const btn = document.getElementById('submitBtn');
+  setNetworkButtonLoading(btn, true);
   fetch(`${baseUrl}/api/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
-  }).then(res => res.json()).then(data => {
-    if (data.success) {
-      saveToken(data.token);
-      teacherId = data.userId;
-      localStorage.setItem('userRole', data.role || 'teacher');
-      document.getElementById('auth-tabs').style.display = 'none';
-      document.getElementById('main').style.display = 'block';
-      document.getElementById('logoutBtn').style.display = 'block';
-      // Display class name
-      localStorage.setItem('teacherClass', data.className || '');
-      showAllAttendanceTabIfAllowed(data.role);
-      showMain();
-    } else {
-      if (!isFromRegister) alert('Login failed');
-    }
-  });
+  })
+    .then(res => res.json())
+    .then(data => {
+      setNetworkButtonLoading(btn, false);
+      if (data.success) {
+        saveToken(data.token);
+        teacherId = data.userId;
+        localStorage.setItem('userRole', data.role || 'teacher');
+        document.getElementById('auth-tabs').style.display = 'none';
+        document.getElementById('main').style.display = 'block';
+        document.getElementById('logoutBtn').style.display = 'block';
+        // Display class name
+        localStorage.setItem('teacherClass', data.className || '');
+        showAllAttendanceTabIfAllowed(data.role);
+        showMain();
+      } else {
+        if (!isFromRegister) alert('Login failed');
+      }
+    })
+    .catch(err => {
+      setNetworkButtonLoading(btn, false);
+      alert('Network error. Please try again.');
+    });
 }
 
 
@@ -111,6 +130,7 @@ function addStudent() {
   const rollInput = document.getElementById('studentRoll');
   const name = nameInput.value.trim();
   const roll = rollInput.value.trim();
+  const btn = document.getElementById('addStudentBtn');
   if (!name || !roll) {
     alert('Please enter both student name and roll number.');
     return;
@@ -126,25 +146,33 @@ function addStudent() {
     alert('Roll number already exists.');
     return;
   }
+  setNetworkButtonLoading(btn, true);
   fetch(`${baseUrl}/api/students`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwtToken },
     body: JSON.stringify({ name, roll })
-  }).then(async res => {
-    if (!res.ok) {
-      const data = await res.json();
-      alert(data.error || 'Failed to register student.');
-      return;
-    }
-    return res.json();
-  }).then(student => {
-    if (student) {
-      students.push(student);
-      renderStudents();
-      nameInput.value = '';
-      rollInput.value = '';
-    }
-  });
+  })
+    .then(async res => {
+      setNetworkButtonLoading(btn, false);
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || 'Failed to register student.');
+        return;
+      }
+      return res.json();
+    })
+    .then(student => {
+      if (student) {
+        students.push(student);
+        renderStudents();
+        nameInput.value = '';
+        rollInput.value = '';
+      }
+    })
+    .catch(err => {
+      setNetworkButtonLoading(btn, false);
+      alert('Network error. Please try again.');
+    });
 }
 
 
@@ -164,7 +192,7 @@ function loadStudents() {
 function renderStudents(attendanceMap = {}) {
   const list = document.getElementById('studentsList');
   list.innerHTML = '';
-  const statuses = ['present', 'sick', 'notified_absence', 'absent'];
+  const statuses = ['present', 'sick', 'notified_absence', 'absent', 'late', 'transferred'];
   students.forEach(student => {
     const currentStatus = attendanceMap[student._id] || 'absent';
     const select = `<select id='status-${student._id}' class='attendance-status-select'>${statuses.map(s => `<option value='${s}'${s===currentStatus?' selected':''}>${s.replace('_', ' ')}</option>`).join('')}</select>`;
@@ -250,6 +278,7 @@ function deleteStudent(studentId) {
 function markAttendance() {
   if (!jwtToken || isTokenExpired()) return alert('Please login again.');
   const date = document.getElementById('attendanceDate').value;
+  const btn = document.getElementById('markAttendanceBtn');
   if (!date) {
     alert('Please select a date before marking attendance.');
     return;
@@ -259,15 +288,23 @@ function markAttendance() {
     alert('You cannot mark attendance for a future date.');
     return;
   }
-  students.forEach(student => {
+  setNetworkButtonLoading(btn, true);
+  Promise.all(students.map(student => {
     const status = document.getElementById(`status-${student._id}`).value;
-    fetch(`${baseUrl}/api/attendance`, {
+    return fetch(`${baseUrl}/api/attendance`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwtToken },
       body: JSON.stringify({ studentId: student._id, date, status })
     });
-  });
-  alert('Attendance marked!');
+  }))
+    .then(() => {
+      setNetworkButtonLoading(btn, false);
+      alert('Attendance marked!');
+    })
+    .catch(err => {
+      setNetworkButtonLoading(btn, false);
+      alert('Network error. Please try again.');
+    });
 }
 function saveToken(token) {
   jwtToken = token;
@@ -343,34 +380,39 @@ function showAllAttendancePage() {
 function fetchAllAttendanceSheets() {
   if (!jwtToken || isTokenExpired()) return alert('Please login again.');
   const date = document.getElementById('allAttendanceDate').value;
+  const btn = document.getElementById('getSheetsBtn');
   if (!date) return alert('Please select a date.');
+  setNetworkButtonLoading(btn, true);
   fetch(`${baseUrl}/api/all-attendance/${date}`, {
     headers: { 'Authorization': 'Bearer ' + jwtToken }
-  }).then(res => res.json()).then(data => {
-    if (!Array.isArray(data) || data.length === 0) {
-      document.getElementById('allAttendanceSheets').innerHTML = '<p>No attendance found for this date.</p>';
-      document.getElementById('printAllAttendanceBtn').style.display = 'none';
-      return;
-    }
-    
-    //let html = '<h3>Attendance Sheets for ' + date + '</h3>';
-    let html = '';
-    data.forEach(sheet => {
-      if(sheet.students.length === 0) return;
-      // html += `<div class='attendance-sheet-block'><h4>Teacher: ${sheet.teacherEmail} (${sheet.className || ''})</h4>`;
-      html += `<div class='attendance-sheet-block'><h2>Attendance Sheet</h2><h3 style='font-size:1rem;color:#509E2F;'>${sheet.className || ''}</h3><img src="enko-modern-logo.png" class="enko-logo"><p>Date: ${formatDate(sheet.date)} &nbsp; No: <b style='color:#509E2F;'>${sheet.students.length}</b></p>`;
-      html += `<table class='attendanceSheetTable'><thead><tr><th>Name</th><th>Roll</th><th>Status</th></tr></thead><tbody>`;
-      sheet.students.forEach(s => {
-          html += `<tr><td>${s.name}</td><td>${s.roll}</td><td class='status-${s.status}'>${ s.status == "notified_absence" ? "Notified Absence" : s.status.charAt(0).toUpperCase() + s.status.slice(1)}</td></tr>`;
+  })
+    .then(res => res.json())
+    .then(data => {
+      setNetworkButtonLoading(btn, false);
+      if (!Array.isArray(data) || data.length === 0) {
+        document.getElementById('allAttendanceSheets').innerHTML = '<p>No attendance found for this date.</p>';
+        document.getElementById('printAllAttendanceBtn').style.display = 'none';
+        return;
+      }
+      let html = '';
+      data.forEach(sheet => {
+        if(sheet.students.length === 0) return;
+        html += `<div class='attendance-sheet-block'><h2>Attendance Sheet</h2><h3 style='font-size:1rem;color:#509E2F;'>${sheet.className || ''}</h3><img src="enko-modern-logo.png" class="enko-logo"><p>Date: ${formatDate(sheet.date)} &nbsp; No: <b style='color:#509E2F;'>${sheet.students.length}</b></p>`;
+        html += `<table class='attendanceSheetTable'><thead><tr><th>Name</th><th>Roll</th><th>Status</th></tr></thead><tbody>`;
+        sheet.students.forEach(s => {
+            html += `<tr><td>${s.name}</td><td>${s.roll}</td><td class='status-${s.status}'>${ s.status == "notified_absence" ? "Notified Absence" : s.status.charAt(0).toUpperCase() + s.status.slice(1)}</td></tr>`;
+        });
+        html += '</tbody></table></div>';
+        html += `<div style='margin-top:32px;text-align:center;opacity:0.5;font-size:0.8rem;'>${sheet.teacherEmail}</div>`;
+        html += `<div style='margin-top:8px;text-align:center;opacity:0.5;font-size:1.1rem;'>Powered by Basic Attendance</div>`;
       });
-      html += '</tbody></table></div>';
-      html += `<div style='margin-top:32px;text-align:center;opacity:0.5;font-size:0.8rem;'>${sheet.teacherEmail}</div>`;
-      html += `<div style='margin-top:8px;text-align:center;opacity:0.5;font-size:1.1rem;'>Powered by Basic Attendance</div>`;
+      document.getElementById('allAttendanceSheets').innerHTML = html;
+      document.getElementById('allSheetsViewer').style.display = 'flex';
+    })
+    .catch(err => {
+      setNetworkButtonLoading(btn, false);
+      alert('Network error. Please try again.');
     });
-    document.getElementById('allAttendanceSheets').innerHTML = html;
-    // document.getElementById('printAllAttendanceBtn').style.display = 'flex';
-    document.getElementById('allSheetsViewer').style.display = 'flex';
-  });
 }
 
 function printAllAttendanceSheets() {
@@ -442,20 +484,27 @@ function closeAllSheetsViewer() {
 }
 
 function printSheet() {
-  const printContents = document.getElementById('attendanceSheet').innerHTML;
-  const originalContents = document.body.innerHTML;
-  document.body.innerHTML = printContents;
+  const btn = document.getElementById('printSheetBtn');
+  setNetworkButtonLoading(btn, true);
+  try {
+    const printContents = document.getElementById('attendanceSheet').innerHTML;
+    const originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
 
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write('<html><head><title>Print</title>');
-  printWindow.document.write('<link rel="stylesheet" href="style.css">');
-  printWindow.document.write('<style>.enko-logo { height: 80px; position: absolute; right: 34px; top: 24px; }</style>');
-  printWindow.document.write('</head><body>');
-  printWindow.document.write(printContents);
-  printWindow.document.write('</body></html>');
-  printWindow.document.close();
-  printWindow.print();
-  document.body.innerHTML = originalContents;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write('<html><head><title>Print</title>');
+    printWindow.document.write('<link rel="stylesheet" href="style.css">');
+    printWindow.document.write('<style>body {background-color: white;}.enko-logo { height: 80px; position: absolute; right: 34px; top: 24px; }</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(printContents);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+    document.body.innerHTML = originalContents;
+  } catch (e) {
+    alert('Print failed.');
+  }
+  setTimeout(() => setNetworkButtonLoading(btn, false), 800); // restore after short delay
 }
 
 function setActiveTab(tab) {
@@ -553,10 +602,12 @@ function showSignupTab() {
 function setTeacherClass() {
   const classInput = document.getElementById('teacherClass');
   const className = classInput.value.trim();
+  const btn = document.getElementById('saveClassBtn');
   if (!className) {
     alert('Please enter a class name.');
     return;
   }
+  setNetworkButtonLoading(btn, true);
   fetch(`${baseUrl}/api/teacher/class`, {
     method: 'POST',
     headers: {
@@ -564,14 +615,20 @@ function setTeacherClass() {
       'Authorization': 'Bearer ' + jwtToken
     },
     body: JSON.stringify({ className })
-  }).then(async res => {
-    const data = await res.json();
-    if (!res.ok) {
-      alert(data.error || 'Failed to save class name.');
-      return;
-    }
-    localStorage.setItem('teacherClass', className);
-    document.getElementById('classDisplay').textContent = className ? `Class: ${className}` : '';
-    alert('Class name saved!');
-  });
+  })
+    .then(async res => {
+      const data = await res.json();
+      setNetworkButtonLoading(btn, false);
+      if (!res.ok) {
+        alert(data.error || 'Failed to save class name.');
+        return;
+      }
+      localStorage.setItem('teacherClass', className);
+      document.getElementById('classDisplay').textContent = className ? `Class: ${className}` : '';
+      alert('Class name saved!');
+    })
+    .catch(err => {
+      setNetworkButtonLoading(btn, false);
+      alert('Network error. Please try again.');
+    });
 }

@@ -179,6 +179,10 @@ h1 {
     .enko-logo {
         top: 23px;
     }
+
+    body {
+        background: #fff;
+    }
 }
 
 #registerPage.tab-content {

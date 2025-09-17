@@ -14,6 +14,9 @@ app.use(bodyParser.json());
 // Serve static files (HTML, CSS, JS) from the src directory
 const path = require('path');
 app.use(express.static(path.join(__dirname)));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/styles', express.static(path.join(__dirname, 'styles')));
+app.use('/app', express.static(path.join(__dirname, 'app')));
 
 const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
 

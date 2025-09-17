@@ -1,7 +1,0 @@
-<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="120" height="120" rx="24" fill="#cfdef3"/>
-  <circle cx="60" cy="60" r="40" fill="#e0eafc"/>
-  <text x="60" y="68" text-anchor="middle" font-size="28" font-family="Montserrat, Arial, Helvetica, sans-serif" fill="#222" font-weight="bold">BA</text>
-  <rect x="32" y="90" width="56" height="10" rx="5" fill="#cfdef3"/>
-  <text x="60" y="98" text-anchor="middle" font-size="12" font-family="Montserrat, Arial, Helvetica, sans-serif" fill="#222">Attendance</text>
-</svg>

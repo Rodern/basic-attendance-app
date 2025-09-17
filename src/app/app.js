@@ -397,7 +397,7 @@ function fetchAllAttendanceSheets() {
       let html = '';
       data.forEach(sheet => {
         if(sheet.students.length === 0) return;
-        html += `<div class='attendance-sheet-block'><h2>Attendance Sheet</h2><h3 style='font-size:1rem;color:#509E2F;'>${sheet.className || ''}</h3><img src="enko-modern-logo.png" class="enko-logo"><p>Date: ${formatDate(sheet.date)} &nbsp; No: <b style='color:#509E2F;'>${sheet.students.length}</b></p>`;
+        html += `<div class='attendance-sheet-block'><h2>Attendance Sheet</h2><h3 style='font-size:1rem;color:#509E2F;'>${sheet.className || ''}</h3><img src="assets/enko-modern-logo.png" class="enko-logo"><p>Date: ${formatDate(sheet.date)} &nbsp; No: <b style='color:#509E2F;'>${sheet.students.length}</b></p>`;
         html += `<table class='attendanceSheetTable'><thead><tr><th>Name</th><th>Roll</th><th>Status</th></tr></thead><tbody>`;
         sheet.students.forEach(s => {
             html += `<tr><td>${s.name}</td><td>${s.roll}</td><td class='status-${s.status}'>${ s.status == "notified_absence" ? "Notified Absence" : s.status.charAt(0).toUpperCase() + s.status.slice(1)}</td></tr>`;
@@ -419,7 +419,7 @@ function printAllAttendanceSheets() {
   const printContents = document.getElementById('allAttendanceSheets').innerHTML;
   const printWindow = window.open('', '_blank');
   printWindow.document.write('<html><head><title>Print</title>');
-  printWindow.document.write('<link rel="stylesheet" href="style.css">');
+  printWindow.document.write('<link rel="stylesheet" href="styles/style.css">');
   printWindow.document.write('</head><body>');
   printWindow.document.write(printContents);
   printWindow.document.write('</body></html>');
@@ -462,7 +462,7 @@ function printAttendanceSheet() {
       attendanceMap[a.studentId] = a.status;
     });
     // Build sheet HTML
-      let html = `<h2>Attendance Sheet</h2><h3 style='font-size:1rem;color:#509E2F;'>${localStorage.getItem('teacherClass')}</h3><img src="enko-modern-logo.png" class="enko-logo"><p>Date: ${formatDate(date)} &nbsp; No: <b style='color:#509E2F;'>${students.length}</b></p>`;
+      let html = `<h2>Attendance Sheet</h2><h3 style='font-size:1rem;color:#509E2F;'>${localStorage.getItem('teacherClass')}</h3><img src="assets/enko-modern-logo.png" class="enko-logo"><p>Date: ${formatDate(date)} &nbsp; No: <b style='color:#509E2F;'>${students.length}</b></p>`;
       html += `<table class='attendanceSheetTable'><thead><tr><th>Name</th><th>Roll</th><th>Status</th></tr></thead><tbody style='font-weight:500;'>`;
         students.forEach(student => {
       const status = attendanceMap[student._id] || 'absent';
@@ -492,9 +492,9 @@ function printSheet() {
     document.body.innerHTML = printContents;
 
     const printWindow = window.open('', '_blank');
-    printWindow.document.write('<html><head><title>Print</title>');
-    printWindow.document.write('<link rel="stylesheet" href="style.css">');
-    printWindow.document.write('<style>body {background-color: white;}.enko-logo { height: 80px; position: absolute; right: 34px; top: 24px; }</style>');
+    printWindow.document.write('<html><head><title>Attendance Sheet</title>');
+    printWindow.document.write('<link rel="stylesheet" href="styles/style.css">');
+    // printWindow.document.write('<style>body {background-color: white;}.enko-logo { height: 80px; position: absolute; right: 34px; top: 24px; }</style>');
     printWindow.document.write('</head><body>');
     printWindow.document.write(printContents);
     printWindow.document.write('</body></html>');
